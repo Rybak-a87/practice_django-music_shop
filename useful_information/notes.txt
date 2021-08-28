@@ -102,4 +102,6 @@ python manage.py runserver
 Запуск тестирования
 python manage.py test
 ----------------------------------------------------------------------
-Этапы создания музыкального магазина:
+Создание приложения в определенном месте:
+mkdir ./src/musicshop/main
+./src/manage.py startapp main ./src/musicshop/main
