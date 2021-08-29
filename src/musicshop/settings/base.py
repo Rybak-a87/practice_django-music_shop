@@ -14,6 +14,10 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+PROJECT_PATH = BASE_DIR.parent
+# или
+# PROJECT_PATH = Path(__file__).resolve().parent.parent.parent.parent
+# BASE_DIR = os.path.join(PROJECT_PATH, "src")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -54,7 +58,8 @@ ROOT_URLCONF = 'musicshop.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, "musicshop", "templates")],
+        # 'DIRS': [os.path.join(BASE_DIR, "musicshop", "templates")],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -76,7 +81,7 @@ WSGI_APPLICATION = 'musicshop.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR.parent / 'db_sqlite/db.sqlite3',
+        'NAME': PROJECT_PATH / 'db_sqlite' / 'db.sqlite3',
     }
 }
 
@@ -118,6 +123,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = PROJECT_PATH / "static_content" / "static"
+# STATICFILES_DIRS = [(os.path.join(BASE_DIR, "static"))]
+# STATICFILES_DIRS = []
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(PROJECT_PATH, "static_content", "media")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
