@@ -3,6 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.utils import timezone
 from django.conf import settings
+from django.utils.safestring import mark_safe
 
 from musicshop.utils import upload_function
 
@@ -105,16 +106,16 @@ class CartProduct(models.Model):
         self.final_price = self.qty * self.content_object.price
         super().save(*args, **kwargs)
 
-        class Meta:
-            verbose_name = "Продукт корзины"
-            verbose_name_plural = "Продукты корзины"
+    class Meta:
+        verbose_name = "Продукт корзины"
+        verbose_name_plural = "Продукты корзины"
 
 
 class Cart(models.Model):
     """ Модель корзины """
     owner = models.ForeignKey("Customer", verbose_name="Покупатель", on_delete=models.CASCADE)
     products = models.ManyToManyField(
-        CartProduct, verbose_name="Продукты для корзины", blank=True, null=True, related_name="related_card"
+        CartProduct, verbose_name="Продукты для корзины", blank=True, related_name="related_card"
     )
     total_products = models.IntegerField(verbose_name="Общее количество товара", default=0)
     final_price = models.DecimalField(verbose_name="Общая цена", max_digits=9, decimal_places=2)
@@ -215,6 +216,9 @@ class ImageGallery(models.Model):
 
     def __str__(self):
         return f"Изображение для {self.content_object}"
+
+    def image_url(self):
+        return mark_safe(f"<img src='{self.image.url}' width='auto' height='200px'")
 
     class Meta:
         verbose_name = "Галерея изображений"

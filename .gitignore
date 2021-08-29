@@ -3,3 +3,4 @@
 
 dj_env/
 db_sqlite/db.sqlite3
+static_content/
