@@ -4,6 +4,8 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.utils import timezone
 from django.conf import settings
 
+from musicshop.utils import upload_function
+
 
 class MediaType(models.Model):
     """ Модель медиа носителя """
@@ -21,6 +23,7 @@ class Member(models.Model):
     """ Модель музыканта """
     name = models.CharField(max_length=200, verbose_name="Имя музыканта")
     slug = models.SlugField()
+    image = models.ImageField(upload_to=upload_function, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -49,6 +52,7 @@ class Artist(models.Model):
     genre = models.ForeignKey(Genre, verbose_name="Жанр", on_delete=models.CASCADE)
     members = models.ManyToManyField(Member, verbose_name="Участник", related_name="artist")
     slug = models.SlugField()
+    image = models.ImageField(upload_to=upload_function, null=True, blank=True)
 
     def __str__(self):
         return f"{self.name} | {self.genre.name}"
@@ -68,8 +72,9 @@ class Album(models.Model):
     slug = models.SlugField()
     description = models.TextField(verbose_name="Описание", default="Описание появится позже")
     stock = models.IntegerField(verbose_name="Наличие на складе", default=1)
-    price = models.DecimalField(verbose_name="Цена", max_digits=9, max_length=2)
+    price = models.DecimalField(verbose_name="Цена", max_digits=9, decimal_places=2)
     offer_of_the_week = models.BooleanField(verbose_name="Предложение недели", default=False)
+    image = models.ImageField(upload_to=upload_function)
 
     def __str__(self):
         return f"{self.id} | {self.artist.name} | {self.name}"
@@ -91,7 +96,7 @@ class CartProduct(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
     qty = models.PositiveIntegerField(default=1)
-    final_price = models.DecimalField(verbose_name="Общая цена", max_digits=9, max_length=2)
+    final_price = models.DecimalField(verbose_name="Общая цена", max_digits=9, decimal_places=2)
 
     def __str__(self):
         return f"Продукт: {self.content_object.name} (для корзины)"
@@ -112,7 +117,7 @@ class Cart(models.Model):
         CartProduct, verbose_name="Продукты для корзины", blank=True, null=True, related_name="related_card"
     )
     total_products = models.IntegerField(verbose_name="Общее количество товара", default=0)
-    final_price = models.DecimalField(verbose_name="Общая цена", max_digits=9, max_length=2)
+    final_price = models.DecimalField(verbose_name="Общая цена", max_digits=9, decimal_places=2)
     in_order = models.BooleanField(default=False)
     for_anonymous_user = models.BooleanField(default=False)
 
@@ -171,7 +176,7 @@ class Order(models.Model):
 
 class Customer(models.Model):
     """ Модель покупателя """
-    user = models.OneToOneField(settings.AUTH_MODEL_USER, verbose_name="Пользователь", on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, verbose_name="Пользователь", on_delete=models.CASCADE)
     is_active = models.BooleanField(verbose_name="Активный", default=True)
     customer_orders = models.ManyToManyField(Order, verbose_name="Заказы", blank=True, related_name="related_customer")
     wishlist = models.ManyToManyField(Album, verbose_name="Список ожидаемого", blank=True)
@@ -198,3 +203,19 @@ class Notification(models.Model):
     class Meta:
         verbose_name = "Уведомление"
         verbose_name_plural = "Уведомления"
+
+
+class ImageGallery(models.Model):
+    """ Модель галереи изображений"""
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+    image = models.ImageField(upload_to=upload_function)
+    use_in_slider = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Изображение для {self.content_object}"
+
+    class Meta:
+        verbose_name = "Галерея изображений"
+        verbose_name_plural = verbose_name
