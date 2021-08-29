@@ -4,6 +4,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.utils import timezone
 from django.conf import settings
 from django.utils.safestring import mark_safe
+from django.urls import reverse
 
 from musicshop.utils import upload_function
 
@@ -58,6 +59,9 @@ class Artist(models.Model):
     def __str__(self):
         return f"{self.name} | {self.genre.name}"
 
+    def get_absolute_url(self):
+        return reverse("main:artist_detail", kwargs={"artist_slug": self.slug})
+
     class Meta:
         verbose_name = "Исполнитель"
         verbose_name_plural = "Исполнители"
@@ -83,6 +87,9 @@ class Album(models.Model):
     @property
     def ct_model(self):
         return self._meta.model_name
+
+    def get_absolute_url(self):
+        return reverse("main:album_detail", kwargs={"artist_slug": self.artist.slug, "album_slug": self.slug})
 
     class Meta:
         verbose_name = "Альбом"
